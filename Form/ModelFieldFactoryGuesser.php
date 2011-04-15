@@ -29,21 +29,21 @@ class ModelFieldFactoryGuesser implements FieldFactoryGuesserInterface
         $query      = new $queryClass;
         $tableMap   = $query->getTableMap();
 
-        if ($tableMap->hasRelation($property)) {
-            $relation = $tableMap->getRelation($property);
+        $relationName = ucfirst($property);
+        if ($tableMap->hasRelation($relationName)) {
+            $relation = $tableMap->getRelation($relationName);
             $multiple = $relation->getType() == \RelationMap::ONE_TO_ONE ? false : true;
 
             return new FieldFactoryClassGuess(
-                'Symfony\Component\Form\EntityChoiceField',
+                'Propel\PropelBundle\Form\ModelChoiceField',
                 array(
-                    'em' => null,
-                    'class' => $mapping['targetEntity'],
+                    'class' => $relation->getLocalTable()->getClassname(),
                     'multiple' => $multiple,
                 ),
                 FieldFactoryGuess::HIGH_CONFIDENCE
             );
         } else {
-            switch ($tableMap->getColumn($property)->getType())
+            switch (strtolower($tableMap->getColumn($property)->getType()))
             {
                 //            case 'array':
                 //                return new FieldFactoryClassGuess(
@@ -59,7 +59,7 @@ class ModelFieldFactoryGuesser implements FieldFactoryGuesserInterface
                 );
             case 'datetime':
             case 'vardatetime':
-            case 'datetimetz':
+            case 'datetimez':
                 return new FieldFactoryClassGuess(
                     'Symfony\Component\Form\DateTimeField',
                     array(),
@@ -86,6 +86,7 @@ class ModelFieldFactoryGuesser implements FieldFactoryGuesserInterface
                     array(),
                     FieldFactoryGuess::MEDIUM_CONFIDENCE
                 );
+            case 'varchar':
             case 'string':
                 return new FieldFactoryClassGuess(
                     'Symfony\Component\Form\TextField',
@@ -124,17 +125,20 @@ class ModelFieldFactoryGuesser implements FieldFactoryGuesserInterface
         $query      = new $queryClass;
         $tableMap   = $query->getTableMap();
 
-        if ($col = $tableMap->getColumn($property)) {
-            if (! $col->isNotNull()) {
-                return new FieldFactoryGuess(
-                    true,
-                    FieldFactoryGuess::HIGH_CONFIDENCE
-                );
+        $relationName = ucfirst($property);
+        if (! $tableMap->hasRelation($relationName)) {
+            if ($col = $tableMap->getColumn($property)) {
+                if (! $col->isNotNull()) {
+                    return new FieldFactoryGuess(
+                        true,
+                        FieldFactoryGuess::HIGH_CONFIDENCE
+                    );
 
-                return new FieldFactoryGuess(
-                    false,
-                    FieldFactoryGuess::MEDIUM_CONFIDENCE
-                );
+                    return new FieldFactoryGuess(
+                        false,
+                        FieldFactoryGuess::MEDIUM_CONFIDENCE
+                    );
+                }
             }
         }
     }
@@ -148,8 +152,14 @@ class ModelFieldFactoryGuesser implements FieldFactoryGuesserInterface
         $query      = new $queryClass;
         $tableMap   = $query->getTableMap();
 
-        if ($col = $tableMap->getColumn($property)) {
-            return $col->getSize();
+        $relationName = ucfirst($property);
+        if (! $tableMap->hasRelation($relationName)) {
+            if ($col = $tableMap->getColumn($property)) {
+                return new FieldFactoryGuess(
+                    $col->getSize(),
+                    FieldFactoryGuess::HIGH_CONFIDENCE
+                );
+            }
         }
 
         return null;
