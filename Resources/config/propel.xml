@@ -11,7 +11,7 @@
         <parameter key="propel.data_collector.class">Propel\PropelBundle\DataCollector\PropelDataCollector</parameter>
 
         <!-- form field factory guesser -->
-        <parameter key="form.field_factory.propel_guesser.class">Propel\PropelBundle\Form\ModelFieldFactoryGuesser</parameter>
+        <parameter key="form.field_factory.propel_guesser.class">Propel\PropelBundle\Form\FieldFactory\ModelFieldFactoryGuesser</parameter>
     </parameters>
 
     <services>
