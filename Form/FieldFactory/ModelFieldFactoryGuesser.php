@@ -1,6 +1,6 @@
 <?php
 
-namespace Propel\PropelBundle\Form;
+namespace Propel\PropelBundle\Form\FieldFactory;
 
 use Symfony\Component\Form\FieldFactory\FieldFactoryGuesserInterface;
 use Symfony\Component\Form\FieldFactory\FieldFactoryClassGuess;
