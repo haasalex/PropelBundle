@@ -9,6 +9,9 @@
         <parameter key="propel.configuration.class">PropelConfiguration</parameter>
         <parameter key="propel.logger.class">Propel\PropelBundle\Logger\PropelLogger</parameter>
         <parameter key="propel.data_collector.class">Propel\PropelBundle\DataCollector\PropelDataCollector</parameter>
+
+        <!-- form field factory guesser -->
+        <parameter key="form.field_factory.propel_guesser.class">Propel\PropelBundle\Form\ModelFieldFactoryGuesser</parameter>
     </parameters>
 
     <services>
@@ -24,6 +27,10 @@
             <argument type="service" id="propel.logger" />
             <argument>%propel.dbal.default_connection%</argument>
             <argument type="service" id="propel.configuration" />
+        </service>
+
+        <service id="form.field_factory.propel_guesser" class="%form.field_factory.propel_guesser.class%" public="false">
+            <tag name="form.field_factory.guesser" />
         </service>
     </services>
 </container>
